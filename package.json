@@ -1,0 +1,22 @@
+{
+  "name": "jhounty",
+  "version": "1.0.0",
+  "description": "Discord-bot for tracking Raid Bounties in Guild Wars 2.",
+  "homepage": "https://github.com/juuha/Jhounty#readme",
+  "bugs": {
+    "url": "https://github.com/juuha/Jhounty/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/juuha/Jhounty.git"
+  },
+  "license": "MIT",
+  "author": "Juuha",
+  "main": "jhounty.cjs",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "discord.js": "^14.25.1"
+  }
+}

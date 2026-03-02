@@ -1,0 +1,90 @@
+{
+    "cycle1full": [
+        "Shiverpeaks Pass",
+        "Voice and Claw of the Fallen",
+        "Fraenir of Jormag",
+        "Gorseval",
+        "Cairn",
+        "Mursaat Overseer"
+    ],
+    "cycle1short": [
+        "Shiverpeaks",
+        "Bears",
+        "Fraenir",
+        "Gorseval",
+        "Cairn",
+        "MO"
+    ],
+    "cycle2full": [
+        "Aetherblade Hideout",
+        "Cardinal Sabir",
+        "Whisper of Jormag",
+        "Vale Guardian",
+        "Cosmic Observatory",
+        "Cold War",
+        "Boneskinner",
+        "Sabetha",
+        "Xunlai Jade Junkyard",
+        "Temple of Febe",
+        "Keep Construct",
+        "Kela"
+    ],
+    "cycle2short": [
+        "AH",
+        "Sabir",
+        "Whisper",
+        "VG",
+        "CO",
+        "CW",
+        "Boneskinner",
+        "Sabetha",
+        "XJJ",
+        "Febe",
+        "KC",
+        "Kela"
+    ],
+    "cycle3full": [
+        "Slothasor",
+        "Matthias",
+        "Xera",
+        "Samarog",
+        "Conjured Amalgamate",
+        "Twin Largos",
+        "Decima",
+        "Cardinal Adina",
+        "Old Lion's Court",
+        "Ura",
+        "Kaineng Overlook",
+        "Deimos"
+    ],
+    "cycle3short": [
+        "Sloth",
+        "Matt",
+        "Xera",
+        "Samarog",
+        "CA",
+        "Largos",
+        "Decima",
+        "Adina",
+        "OLC",
+        "Ura",
+        "KO",
+        "Deimos"
+    ],
+    "cycle4full": [
+        "Qadim",
+        "Qadim the Peerless",
+        "Soulless Horror",
+        "Harvest Temple",
+        "Dhuum",
+        "Greer"
+    ],
+    "cycle4short": [
+        "Qadim",
+        "QTP",
+        "SH",
+        "HT",
+        "Dhuum",
+        "Greer"
+    ]
+}
