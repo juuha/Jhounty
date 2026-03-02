@@ -1,2 +1,2 @@
 # Jhounty
-Daily raid bounty tracker for Guild Wars 2.
+Discord-bot for tracking daily Raid Bounties in Guild Wars 2.
