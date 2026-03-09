@@ -1,28 +1,25 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
-const { cycle1, cycle2, cycle3, cycle4 } = require('../bounty_cycles.json')
-const shortOffset = 1;
-const longOffset = 9;
-const short = true;
+const { cycle1, cycle2, cycle3, cycle4 } = require('../bounty_cycles.json');
+const { cycle1offset, cycle2offset, cycle3offset, cycle4offset } = require('../config.json');
+const weekdays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+const tempIsShort = true;
+const tempSelectedDays = ["Monday", "Wednesday"];
 
 module.exports = {
     data: new SlashCommandBuilder().setName('bounties').setDescription('Shows the bounties for the week'),
     async execute(interaction) {
-        let today = new Date();
+        
+        let message = "";
+        const cycleIndices = getCycleIndices()
+        const nameType = tempIsShort ? "short" : "name";
 
-        const daysSinceEpoch = Math.floor(today.getTime() / (1000 * 60 * 60 * 24));
-        const shortIndex = (daysSinceEpoch + shortOffset - (today.getDay() - 1)) % 6;
-        const longIndex = (daysSinceEpoch + longOffset - (today.getDay()) - 1) % 12;
+        for (let day = 0; day < weekdays.length; day++) {
+            if (tempSelectedDays.includes(weekdays[day])) {
+                message += setDayMessage(day, nameType, cycleIndices);
+            }
+        }
 
-        const monMessage = `**Monday: **${cycle1[shortIndex].short}, ${cycle2[longIndex].short}, ${cycle3[longIndex].short} & ${cycle4[shortIndex].short}.\n`;
-        const tueMessage = `**Tuesday: **${cycle1[(shortIndex + 1) % 6].short}, ${cycle2[(longIndex + 1) % 12].short}, ${cycle3[(longIndex + 1) % 12].short} & ${cycle4[(shortIndex + 1) % 6].short}.\n`;
-        const wedMessage = `**Wednesday: **${cycle1[(shortIndex + 2) % 6].short}, ${cycle2[(longIndex + 2) % 12].short}, ${cycle3[(longIndex + 2) % 12].short} & ${cycle4[(shortIndex + 2) % 6].short}.\n`;
-        const thuMessage = `**Thursday: **${cycle1[(shortIndex + 3) % 6].short}, ${cycle2[(longIndex + 3) % 12].short}, ${cycle3[(longIndex + 3) % 12].short} & ${cycle4[(shortIndex + 3) % 6].short}.\n`;
-        const friMessage = `**Friday: **${cycle1[(shortIndex + 4) % 6].short}, ${cycle2[(longIndex + 4) % 12].short}, ${cycle3[(longIndex + 4) % 12].short} & ${cycle4[(shortIndex + 4) % 6].short}.\n`;
-        const satMessage = `**Saturday: **${cycle1[(shortIndex + 5) % 6].short}, ${cycle2[(longIndex + 5) % 12].short}, ${cycle3[(longIndex + 5) % 12].short} & ${cycle4[(shortIndex + 5) % 6].short}.\n`;
-        const sunMessage = `**Sunday: **${cycle1[(shortIndex + 6) % 6].short}, ${cycle2[(longIndex + 6) % 12].short}, ${cycle3[(longIndex + 6) % 12].short} & ${cycle4[(shortIndex + 6) % 6].short}.\n`;
-        const notMessage = `**Not a daily: ** ${cycle2[(longIndex + 7) % 12].short}, ${cycle2[(longIndex + 8) % 12].short}, ${cycle2[(longIndex + 9) % 12].short}, ${cycle2[(longIndex + 10) % 12].short}, ${cycle2[(longIndex + 11) % 12].short}, ${cycle3[(longIndex + 7) % 12].short}, ${cycle3[(longIndex + 8) % 12].short}, ${cycle3[(longIndex + 9) % 12].short}, ${cycle3[(longIndex + 10) % 12].short} & ${cycle3[(longIndex + 6) % 11].short}.`
-
-        const message = monMessage + wedMessage + notMessage;
+        message += setMissingBounties(nameType, cycleIndices);
 
         const embed = new EmbedBuilder()
             .setTitle("Raid bounties this week:")
@@ -35,3 +32,44 @@ module.exports = {
     },
 };
 
+function setDayMessage(day, nameType, cycleIndices) {
+    const dayMessage = `**${weekdays[day]}: **${cycle1[(cycleIndices[0] + day) % cycle1.length][nameType]}, ` +
+        `${cycle2[(cycleIndices[1] + day) % cycle2.length][nameType]}, ` +
+        `${cycle3[(cycleIndices[2] + day) % cycle3.length][nameType]} & ` +
+        `${cycle4[(cycleIndices[3] + day) % cycle4.length][nameType]}.\n`;
+    return dayMessage
+}
+
+function setMissingBounties(nameType, cycleIndices) {
+    var missingBounties = "**Not a daily: **";
+    const cycles = [cycle1, cycle2, cycle3, cycle4]
+    const bounties = [];
+    for (let index = 0; index < cycles.length; index++) {
+        const cycle = cycles[index];
+        for (let bonusDay = 7; bonusDay < cycle.length; bonusDay++) {
+            bounties.push(cycle[(cycleIndices[index] + bonusDay) % cycle.length][nameType]);
+        }
+    }
+    for (let bounty = 0; bounty < bounties.length; bounty++) {
+        if (bounty === bounties.length - 2) {
+            // second to last one
+            missingBounties += `${bounties[bounty]} & `
+        } else if (bounty === bounties.length - 1) {
+            // last one
+            missingBounties += `${bounties[bounty]}.`
+        } else {
+            missingBounties += `${bounties[bounty]}, `
+        }
+    }
+    return missingBounties
+}
+
+function getCycleIndices() {
+    const today = new Date();
+    const daysSinceEpoch = Math.floor(today.getTime() / (1000 * 60 * 60 * 24));
+    const cycle1Index = (daysSinceEpoch + cycle1offset - (today.getDay() - 1)) % cycle1.length;
+    const cycle2Index = (daysSinceEpoch + cycle2offset - (today.getDay() - 1)) % cycle2.length;
+    const cycle3Index = (daysSinceEpoch + cycle3offset - (today.getDay() - 1)) % cycle3.length;
+    const cycle4Index = (daysSinceEpoch + cycle4offset - (today.getDay() - 1)) % cycle4.length;
+    return [cycle1Index, cycle2Index, cycle3Index, cycle4Index];
+}

@@ -1,5 +1,9 @@
 {
     "token": "<token>",
     "client_id": "<client_id>",
-    "guild_id": "<guild_id>"
+    "guild_id": "<guild_id>",
+    "cycle1offset": 1,
+    "cycle2offset": 8,
+    "cycle3offset": 8,
+    "cycle4offset": 1
 }
