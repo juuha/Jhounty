@@ -1,5 +1,5 @@
 {
-    "TOKEN": "<token>",
-    "CLIENT_ID": "<client_id>",
-    "GUILD_ID": "<guild_id>"
+    "token": "<token>",
+    "client_id": "<client_id>",
+    "guild_id": "<guild_id>"
 }
