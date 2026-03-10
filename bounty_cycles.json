@@ -1,4 +1,8 @@
 {
+    "cycle1offset": 1,
+    "cycle2offset": 7,
+    "cycle3offset": 7,
+    "cycle4offset": 1,
     "cycle1": [
         {
             "name": "Shiverpeaks Pass",

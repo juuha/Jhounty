@@ -1,6 +1,4 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
-const { cycle1, cycle2, cycle3, cycle4 } = require('../bounty_cycles.json');
-const { cycle1offset, cycle2offset, cycle3offset, cycle4offset } = require('../config.json');
 const weekdays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 const tempSelectedDays = ["Monday", "Wednesday"];
 
@@ -24,19 +22,25 @@ module.exports = {
                 )
         ),
     async execute(interaction) {
+        const { 
+            cycle1, cycle2, cycle3, cycle4,
+            cycle1offset, cycle2offset, cycle3offset, cycle4offset
+        } = require('../bounty_cycles.json');
+        const cycles = [cycle1, cycle2, cycle3, cycle4];
+        const cycleOffsets = [cycle1offset, cycle2offset, cycle3offset, cycle4offset];
         const bountyType = interaction.options.getString("type") ?? "both";
         const nameType = interaction.options.getBoolean("shortened") ? "short" : "name";
-        const cycleIndices = getCycleIndices()
+        const cycleIndices = getCycleIndices(cycles, cycleOffsets)
         const title = setTitle(bountyType);
         let message = "";
 
         for (let day = 0; day < weekdays.length; day++) {
             if (tempSelectedDays.includes(weekdays[day])) {
-                message += setDayMessage(day, nameType, bountyType, cycleIndices);
+                message += setDayMessage(day, nameType, bountyType, cycles, cycleIndices);
             }
         }
 
-        message += setMissingBounties(nameType, bountyType, cycleIndices);
+        message += setMissingBounties(nameType, bountyType, cycles, cycleIndices);
 
         const embed = new EmbedBuilder()
             .setTitle(title)
@@ -49,9 +53,8 @@ module.exports = {
     },
 };
 
-function setDayMessage(day, nameType, bountyType, cycleIndices) {
+function setDayMessage(day, nameType, bountyType, cycles, cycleIndices) {
     let dayMessage = `**${weekdays[day]}: **`;
-    const cycles = [cycle1, cycle2, cycle3, cycle4];
     const bounties = [];
     for (let cycleIndex = 0; cycleIndex < cycles.length; cycleIndex++) {
         const cycle = cycles[cycleIndex];
@@ -74,9 +77,8 @@ function setDayMessage(day, nameType, bountyType, cycleIndices) {
     return dayMessage
 }
 
-function setMissingBounties(nameType, bountyType, cycleIndices) {
+function setMissingBounties(nameType, bountyType, cycles, cycleIndices) {
     var missingBounties = "**Not a daily: **";
-    const cycles = [cycle1, cycle2, cycle3, cycle4];
     const bounties = [];
     for (let index = 0; index < cycles.length; index++) {
         const cycle = cycles[index];
@@ -101,14 +103,14 @@ function setMissingBounties(nameType, bountyType, cycleIndices) {
     return missingBounties
 }
 
-function getCycleIndices() {
+function getCycleIndices(cycles, cycleoffsets) {
     const today = new Date();
     const daysSinceEpoch = Math.floor(today.getTime() / (1000 * 60 * 60 * 24));
-    const cycle1Index = (daysSinceEpoch + cycle1offset - (today.getDay() - 1)) % cycle1.length;
-    const cycle2Index = (daysSinceEpoch + cycle2offset - (today.getDay() - 1)) % cycle2.length;
-    const cycle3Index = (daysSinceEpoch + cycle3offset - (today.getDay() - 1)) % cycle3.length;
-    const cycle4Index = (daysSinceEpoch + cycle4offset - (today.getDay() - 1)) % cycle4.length;
-    return [cycle1Index, cycle2Index, cycle3Index, cycle4Index];
+    const cycleIndices = []
+    for (let index = 0; index < cycles.length; index++) {
+        cycleIndices.push((daysSinceEpoch + cycleoffsets[index] - (today.getDay() - 1)) % cycles[index].length);        
+    }
+    return cycleIndices;
 }
 
 function setTitle(bountyType) {
