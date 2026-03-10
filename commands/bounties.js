@@ -22,12 +22,7 @@ module.exports = {
                 )
         ),
     async execute(interaction) {
-        const { 
-            cycle1, cycle2, cycle3, cycle4,
-            cycle1offset, cycle2offset, cycle3offset, cycle4offset
-        } = require('../bounty_cycles.json');
-        const cycles = [cycle1, cycle2, cycle3, cycle4];
-        const cycleOffsets = [cycle1offset, cycle2offset, cycle3offset, cycle4offset];
+        const { cycles, cycleOffsets } = require('../bounty_cycles.json');
         const bountyType = interaction.options.getString("type") ?? "both";
         const nameType = interaction.options.getBoolean("shortened") ? "short" : "name";
         const cycleIndices = getCycleIndices(cycles, cycleOffsets)
@@ -108,7 +103,7 @@ function getCycleIndices(cycles, cycleoffsets) {
     const daysSinceEpoch = Math.floor(today.getTime() / (1000 * 60 * 60 * 24));
     const cycleIndices = []
     for (let index = 0; index < cycles.length; index++) {
-        cycleIndices.push((daysSinceEpoch + cycleoffsets[index] - (today.getDay() - 1)) % cycles[index].length);        
+        cycleIndices.push((daysSinceEpoch + cycleoffsets[index] - (today.getDay() - 1)) % cycles[index].length);
     }
     return cycleIndices;
 }

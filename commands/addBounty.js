@@ -1,6 +1,5 @@
 const fs = require('node:fs');
 const { SlashCommandBuilder, MessageFlags } = require('discord.js');
-const { cycle1, cycle2, cycle3, cycle4 } = require('../bounty_cycles.json');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -35,19 +34,16 @@ module.exports = {
                 )
         ),
     async execute(interaction) {
-        const cycleIndex = interaction.options.getInteger("cycle")-1;
-        const cycles = [cycle1, cycle2, cycle3, cycle4];
+        const bounty_cycles_json = require("../bounty_cycles.json");
+        const cycleIndex = interaction.options.getInteger("cycle") - 1;
+
         const bounty = {
             "name": interaction.options.getString("fullname"),
             "short": interaction.options.getString("shortname"),
             "type": interaction.options.getString("type")
         };
-        const updatedCycle = cycles[cycleIndex];
-        updatedCycle.push(bounty);
-        const cycleNames = ["cycle1", "cycle2", "cycle3", "cycle4"];
-        let bounty_cycles_json = require("../bounty_cycles.json");
-        bounty_cycles_json[cycleNames[cycleIndex]] = updatedCycle;
-        console.log(bounty_cycles_json)
+
+        bounty_cycles_json["cycles"][cycleIndex].push(bounty);
         fs.writeFile('bounty_cycles.json', JSON.stringify(bounty_cycles_json, null, 4), async (error) => {
             if (error) console.error(error);
         });

@@ -20,17 +20,17 @@ module.exports = {
                 .setRequired(true)
         ),
     async execute(interaction) {
-        const cycle = interaction.options.getInteger("cycle");
+        const bounty_cycles_json = require("../bounty_cycles.json");
+        const cycleIndex = interaction.options.getInteger("cycle") - 1;
         const offset = interaction.options.getInteger("offset");
-        const cycleOffsets = ["cycle1offset", "cycle2offset", "cycle3offset", "cycle4offset"];
-        let bounty_cycles = require("../bounty_cycles.json");
-        bounty_cycles[cycleOffsets[cycle - 1]] = offset;
-        fs.writeFile('bounty_cycles.json', JSON.stringify(bounty_cycles, null, 4), async (error) => {
+
+        bounty_cycles_json["cycleOffsets"][cycleIndex] = offset;
+        fs.writeFile('bounty_cycles.json', JSON.stringify(bounty_cycles_json, null, 4), async (error) => {
             if (error) console.error(error);
         });
 
         await interaction.reply({
-            content: `The offset for cycle ${cycle} has been set to ${offset}.`,
+            content: `The offset for cycle ${cycleIndex + 1} has been set to ${offset}.`,
             flags: MessageFlags.Ephemeral
         });
     }

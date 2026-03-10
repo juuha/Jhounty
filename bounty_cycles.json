@@ -1,194 +1,198 @@
 {
-    "cycle1offset": 1,
-    "cycle2offset": 7,
-    "cycle3offset": 7,
-    "cycle4offset": 1,
-    "cycle1": [
-        {
-            "name": "Shiverpeaks Pass",
-            "short": "SpP",
-            "type": "strike"
-        },
-        {
-            "name": "Voice And Claw of the Fallen",
-            "short": "Bears",
-            "type": "strike"
-        },
-        {
-            "name": "Freanir of Jormag",
-            "short": "Fraenir",
-            "type": "strike"
-        },
-        {
-            "name": "Gorseval",
-            "short": "Gorseval",
-            "type": "raid"
-        },
-        {
-            "name": "Cairn",
-            "short": "Cairn",
-            "type": "raid"
-        },
-        {
-            "name": "Mursaat Overseer",
-            "short": "MO",
-            "type": "raid"
-        }
+    "cycleOffsets": [
+        1,
+        7,
+        7,
+        1
     ],
-    "cycle2": [
-        {
-            "name": "Aetherblade Hideout",
-            "short": "AH",
-            "type": "strike"
-        },
-        {
-            "name": "Cardinal Sabir",
-            "short": "Sabir",
-            "type": "raid"
-        },
-        {
-            "name": "Whisper of Jormag",
-            "short": "WoJ",
-            "type": "strike"
-        },
-        {
-            "name": "Vale Guardian",
-            "short": "VG",
-            "type": "raid"
-        },
-        {
-            "name": "Cosmic Observatory",
-            "short": "CO",
-            "type": "strike"
-        },
-        {
-            "name": "Cold War",
-            "short": "Cold War",
-            "type": "strike"
-        },
-        {
-            "name": "Boneskinner",
-            "short": "Boneskinner",
-            "type": "strike"
-        },
-        {
-            "name": "Sabetha",
-            "short": "Sabetha",
-            "type": "raid"
-        },
-        {
-            "name": "Xunlai Jade Junkyard",
-            "short": "XJJ",
-            "type": "strike"
-        },
-        {
-            "name": "Temple of Febe",
-            "short": "ToF",
-            "type": "strike"
-        },
-        {
-            "name": "Keep Construct",
-            "short": "KC",
-            "type": "raid"
-        },
-        {
-            "name": "Kela",
-            "short": "Kela",
-            "type": "strike"
-        }
-    ],
-    "cycle3": [
-        {
-            "name": "Slothasor",
-            "short": "Sloth",
-            "type": "raid"
-        },
-        {
-            "name": "Matthias",
-            "short": "Matt",
-            "type": "raid"
-        },
-        {
-            "name": "Xera",
-            "short": "Xera",
-            "type": "raid"
-        },
-        {
-            "name": "Samarog",
-            "short": "Samarog",
-            "type": "raid"
-        },
-        {
-            "name": "Conjured Amalgamate",
-            "short": "CA",
-            "type": "raid"
-        },
-        {
-            "name": "Twin Largos",
-            "short": "Largos",
-            "type": "raid"
-        },
-        {
-            "name": "Decima",
-            "short": "Decima",
-            "type": "raid"
-        },
-        {
-            "name": "Cardinal Adina",
-            "short": "Adina",
-            "type": "raid"
-        },
-        {
-            "name": "Old Lion's Court",
-            "short": "OLC",
-            "type": "strike"
-        },
-        {
-            "name": "Ura",
-            "short": "Ura",
-            "type": "raid"
-        },
-        {
-            "name": "Kaineng Overlook",
-            "short": "KO",
-            "type": "strike"
-        },
-        {
-            "name": "Deimos",
-            "short": "Deimos",
-            "type": "raid"
-        }
-    ],
-    "cycle4": [
-        {
-            "name": "Qadim",
-            "short": "Qadim 1",
-            "type": "raid"
-        },
-        {
-            "name": "Qadim the Peerless",
-            "short": "Qadim 2",
-            "type": "raid"
-        },
-        {
-            "name": "Soulless Horror",
-            "short": "SH",
-            "type": "raid"
-        },
-        {
-            "name": "Harvest Temple",
-            "short": "HT",
-            "type": "strike"
-        },
-        {
-            "name": "Dhuum",
-            "short": "Dhuum",
-            "type": "raid"
-        },
-        {
-            "name": "Greer",
-            "short": "Greer",
-            "type": "raid"
-        }
+    "cycles": [
+        [
+            {
+                "name": "Shiverpeaks Pass",
+                "short": "SpP",
+                "type": "strike"
+            },
+            {
+                "name": "Voice And Claw of the Fallen",
+                "short": "Bears",
+                "type": "strike"
+            },
+            {
+                "name": "Freanir of Jormag",
+                "short": "Fraenir",
+                "type": "strike"
+            },
+            {
+                "name": "Gorseval",
+                "short": "Gorseval",
+                "type": "raid"
+            },
+            {
+                "name": "Cairn",
+                "short": "Cairn",
+                "type": "raid"
+            },
+            {
+                "name": "Mursaat Overseer",
+                "short": "MO",
+                "type": "raid"
+            }
+        ],
+        [
+            {
+                "name": "Aetherblade Hideout",
+                "short": "AH",
+                "type": "strike"
+            },
+            {
+                "name": "Cardinal Sabir",
+                "short": "Sabir",
+                "type": "raid"
+            },
+            {
+                "name": "Whisper of Jormag",
+                "short": "WoJ",
+                "type": "strike"
+            },
+            {
+                "name": "Vale Guardian",
+                "short": "VG",
+                "type": "raid"
+            },
+            {
+                "name": "Cosmic Observatory",
+                "short": "CO",
+                "type": "strike"
+            },
+            {
+                "name": "Cold War",
+                "short": "Cold War",
+                "type": "strike"
+            },
+            {
+                "name": "Boneskinner",
+                "short": "Boneskinner",
+                "type": "strike"
+            },
+            {
+                "name": "Sabetha",
+                "short": "Sabetha",
+                "type": "raid"
+            },
+            {
+                "name": "Xunlai Jade Junkyard",
+                "short": "XJJ",
+                "type": "strike"
+            },
+            {
+                "name": "Temple of Febe",
+                "short": "ToF",
+                "type": "strike"
+            },
+            {
+                "name": "Keep Construct",
+                "short": "KC",
+                "type": "raid"
+            },
+            {
+                "name": "Kela",
+                "short": "Kela",
+                "type": "strike"
+            }
+        ],
+        [
+            {
+                "name": "Slothasor",
+                "short": "Sloth",
+                "type": "raid"
+            },
+            {
+                "name": "Matthias",
+                "short": "Matt",
+                "type": "raid"
+            },
+            {
+                "name": "Xera",
+                "short": "Xera",
+                "type": "raid"
+            },
+            {
+                "name": "Samarog",
+                "short": "Samarog",
+                "type": "raid"
+            },
+            {
+                "name": "Conjured Amalgamate",
+                "short": "CA",
+                "type": "raid"
+            },
+            {
+                "name": "Twin Largos",
+                "short": "Largos",
+                "type": "raid"
+            },
+            {
+                "name": "Decima",
+                "short": "Decima",
+                "type": "raid"
+            },
+            {
+                "name": "Cardinal Adina",
+                "short": "Adina",
+                "type": "raid"
+            },
+            {
+                "name": "Old Lion's Court",
+                "short": "OLC",
+                "type": "strike"
+            },
+            {
+                "name": "Ura",
+                "short": "Ura",
+                "type": "raid"
+            },
+            {
+                "name": "Kaineng Overlook",
+                "short": "KO",
+                "type": "strike"
+            },
+            {
+                "name": "Deimos",
+                "short": "Deimos",
+                "type": "raid"
+            }
+        ],
+        [
+            {
+                "name": "Qadim",
+                "short": "Qadim 1",
+                "type": "raid"
+            },
+            {
+                "name": "Qadim the Peerless",
+                "short": "Qadim 2",
+                "type": "raid"
+            },
+            {
+                "name": "Soulless Horror",
+                "short": "SH",
+                "type": "raid"
+            },
+            {
+                "name": "Harvest Temple",
+                "short": "HT",
+                "type": "strike"
+            },
+            {
+                "name": "Dhuum",
+                "short": "Dhuum",
+                "type": "raid"
+            },
+            {
+                "name": "Greer",
+                "short": "Greer",
+                "type": "raid"
+            }
+        ]
     ]
 }
