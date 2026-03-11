@@ -1,11 +1,11 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
-const weekdays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+const weekdays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday", "Not a daily"];
 const tempSelectedDays = ["Monday", "Wednesday"];
 
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('bounties')
-        .setDescription('Shows the bounties for the week')
+        .setDescription('Shows the bounties for the week.')
         .addBooleanOption((option) =>
             option
                 .setName("shortened")
@@ -31,11 +31,12 @@ module.exports = {
 
         for (let day = 0; day < weekdays.length; day++) {
             if (tempSelectedDays.includes(weekdays[day])) {
+                if (day === "Not a daily") {
+                    message += setMissingBounties(nameType, bountyType, cycles, cycleIndices);
+                }
                 message += setDayMessage(day, nameType, bountyType, cycles, cycleIndices);
             }
         }
-
-        message += setMissingBounties(nameType, bountyType, cycles, cycleIndices);
 
         const embed = new EmbedBuilder()
             .setTitle(title)
