@@ -1,51 +1,59 @@
-const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
-const weekdays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday", "Not a daily"];
-const tempSelectedDays = ["Monday", "Wednesday"];
+const { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, StringSelectMenuBuilder, StringSelectMenuOptionBuilder, ComponentType, ButtonBuilder, ButtonStyle, ModalBuilder, LabelBuilder, TextInputBuilder, TextInputStyle, MessageFlags } = require('discord.js');
+const weekdays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday", "Bountyless"];
+const tempSelectedDays = ["Monday", "Wednesday", "Bountyless"];
+const tempPersonalDefaultExists = true;
 
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('bounties')
-        .setDescription('Shows the bounties for the week.')
+        .setDescription(`Display your personal default Bounties view or the global view if it has not been saved.`)
         .addBooleanOption((option) =>
             option
-                .setName("shortened")
-                .setDescription("Do you want short names?")
+                .setName("global")
+                .setDescription("Display the global default Bounties view instead.")
         )
-        .addStringOption((option) =>
+        .addBooleanOption((option) =>
             option
-                .setName("type")
-                .setDescription("What types of bounties do you want? Raids, Strikes or both?")
-                .addChoices(
-                    { name: "Raids", value: "raid" },
-                    { name: "Strikes", value: "strike" },
-                    { name: "Both", value: "both" }
-                )
+                .setName("custom")
+                .setDescription("Display a custom Bounties view.")
         ),
     async execute(interaction) {
         const { cycles, cycleOffsets } = require('../bounty_cycles.json');
-        const bountyType = interaction.options.getString("type") ?? "both";
-        const nameType = interaction.options.getBoolean("shortened") ? "short" : "name";
         const cycleIndices = getCycleIndices(cycles, cycleOffsets)
-        const title = setTitle(bountyType);
-        let message = "";
+        const showGlobalDefault = interaction.options.getBoolean("global");
+        const personalDefaultExists = tempPersonalDefaultExists;
+        const createCustom = interaction.options.getBoolean("custom");
+        let bountyType = "";
+        let nameType = "";
+        let selectedDays = [];
 
-        for (let day = 0; day < weekdays.length; day++) {
-            if (tempSelectedDays.includes(weekdays[day])) {
-                if (day === "Not a daily") {
-                    message += setMissingBounties(nameType, bountyType, cycles, cycleIndices);
-                }
-                message += setDayMessage(day, nameType, bountyType, cycles, cycleIndices);
-            }
+        if (createCustom) {
+            const modal = createBountiesModal()
+            await interaction.showModal(modal);
+            handleBountyModalAndReply(interaction, cycles, cycleIndices)
+            return;
+        } else if (personalDefaultExists && !showGlobalDefault) {
+            // show personal, TODO
+            const personalNameType = "name"; // TODO;
+            const personalBountyTpe = "raid"; // TODO
+            tempSelectedDays.push("Friday"); // TEMPORARY
+            const personalSelectedDays = tempSelectedDays; // TODO
+
+            nameType = personalNameType;
+            bountyType = personalBountyTpe;
+            selectedDays = personalSelectedDays;
+        } else {
+            // show global, TODO
+            const globalNameType = "short"; // TODO
+            const globalBountyType = "both"; // TODO
+            const globalSelectedDays = tempSelectedDays; // TODO
+
+            nameType = globalNameType;
+            bountyType = globalBountyType;
+            selectedDays = globalSelectedDays;
         }
 
-        const embed = new EmbedBuilder()
-            .setTitle(title)
-            .setColor(0x00FFFF)
-            .setDescription(message)
-
-        await interaction.reply({
-            embeds: [embed]
-        });
+        await replyBounty(interaction, nameType, bountyType, selectedDays, cycles, cycleIndices);
     },
 };
 
@@ -74,7 +82,7 @@ function setDayMessage(day, nameType, bountyType, cycles, cycleIndices) {
 }
 
 function setMissingBounties(nameType, bountyType, cycles, cycleIndices) {
-    var missingBounties = "**Not a daily: **";
+    var missingBounties = "**Bountyless: **";
     const bounties = [];
     for (let index = 0; index < cycles.length; index++) {
         const cycle = cycles[index];
@@ -116,5 +124,166 @@ function setTitle(bountyType) {
         return "Strike (no raids) bounties this week:"
     } else {
         return "Both raid and strike bounties this week:"
+    }
+}
+
+async function replyBounty(interaction, nameType = "short", bountyType = "both", selectedDays, cycles, cycleIndices) {
+    const title = setTitle(bountyType);
+    let message = "";
+
+    for (let day = 0; day < weekdays.length; day++) {
+        if (selectedDays.includes(weekdays[day])) {
+            if (weekdays[day] === "Bountyless") {
+                message += setMissingBounties(nameType, bountyType, cycles, cycleIndices);
+            } else {
+                message += setDayMessage(day, nameType, bountyType, cycles, cycleIndices);
+            }
+        }
+    }
+
+    const embed = new EmbedBuilder()
+        .setTitle(title)
+        .setColor(0x00FFFF)
+        .setDescription(message);
+
+    await interaction.reply({
+        embeds: [embed]
+    });
+}
+
+function createBountiesModal() {
+    const bountiesModal = new ModalBuilder()
+        .setCustomId("bountiesModal")
+        .setTitle("How do you want the bounties to look like?");
+
+    const shortInput = new StringSelectMenuBuilder()
+        .setCustomId("nameType")
+        .setMinValues(1)
+        .setMaxValues(1)
+        .addOptions(
+            new StringSelectMenuOptionBuilder()
+                .setLabel("Short names")
+                .setValue("short"),
+            new StringSelectMenuOptionBuilder()
+                .setLabel("Long names")
+                .setValue("name")
+        );
+
+    const shortLabel = new LabelBuilder()
+        .setLabel("Do you want full names or shortened names?")
+        .setDescription("Names are short by default.")
+        .setStringSelectMenuComponent(shortInput);
+
+    const bountyTypeInput = new StringSelectMenuBuilder()
+        .setCustomId("bountyType")
+        .setMinValues(1)
+        .setMaxValues(1)
+        .addOptions(
+            new StringSelectMenuOptionBuilder()
+                .setLabel("Raids")
+                .setValue("raid"),
+            new StringSelectMenuOptionBuilder()
+                .setLabel("Strikes")
+                .setValue("strike"),
+            new StringSelectMenuOptionBuilder()
+                .setLabel("Both Raids and Strikes")
+                .setValue("both")
+        );
+
+    const bountyTypeLabel = new LabelBuilder()
+        .setLabel("Do you want to show Raids or Strikes?")
+        .setDescription("Both are shown by default.")
+        .setStringSelectMenuComponent(bountyTypeInput);
+
+    const daysInput = new StringSelectMenuBuilder()
+        .setCustomId("days")
+        .setMinValues(1)
+        .setMaxValues(8)
+        .setRequired(true)
+        .addOptions(
+            new StringSelectMenuOptionBuilder()
+                .setLabel("Monday")
+                .setValue("Monday"),
+            new StringSelectMenuOptionBuilder()
+                .setLabel("Tuesday")
+                .setValue("Tuesday"),
+            new StringSelectMenuOptionBuilder()
+                .setLabel("Wednesday")
+                .setValue("Wednesday"),
+            new StringSelectMenuOptionBuilder()
+                .setLabel("Thursday")
+                .setValue("Thursday"),
+            new StringSelectMenuOptionBuilder()
+                .setLabel("Friday")
+                .setValue("Friday"),
+            new StringSelectMenuOptionBuilder()
+                .setLabel("Saturday")
+                .setValue("Saturday"),
+            new StringSelectMenuOptionBuilder()
+                .setLabel("Sunday")
+                .setValue("Sunday"),
+            new StringSelectMenuOptionBuilder()
+                .setLabel("Bountyless")
+                .setValue("Bountyless"),
+        );
+
+    const daysLabel = new LabelBuilder()
+        .setLabel("Choose all days you want to see bounties for.")
+        .setDescription("Bountyless means Raid encounters without bounties that week.")
+        .setStringSelectMenuComponent(daysInput);
+
+    const saveAsDefaultInput = new StringSelectMenuBuilder()
+        .setCustomId("saveType")
+        .addOptions(
+            new StringSelectMenuOptionBuilder()
+                .setLabel("Save as personal default")
+                .setValue("personalsave"),
+            new StringSelectMenuOptionBuilder()
+                .setLabel("Save as global default")
+                .setValue("globalsave"),
+            new StringSelectMenuOptionBuilder()
+                .setLabel("Do not save")
+                .setValue("nosave")
+        );
+
+    const saveAsDefaultLabel = new LabelBuilder()
+        .setLabel("Save as personal or global default?")
+        .setDescription("Personal default if set, will be shown instead of global. Not saved by default.")
+        .setStringSelectMenuComponent(saveAsDefaultInput);
+
+    bountiesModal.addLabelComponents(shortLabel, bountyTypeLabel, daysLabel, saveAsDefaultLabel);
+
+    return bountiesModal;
+}
+
+function saveAsDefault(userId, saveType) {
+    if (saveType === "globalsave") {
+        // TODO
+    } else if (saveType === "personalsave") {
+        // TODO
+    }
+}
+
+async function handleBountyModalAndReply(interaction, cycles, cycleIndices) {
+    const filter = (i) => i.customId === 'bountiesModal'
+    try {
+        const response = await interaction.awaitModalSubmit({
+            filter,
+            time: 300_000
+        });
+
+        const nameType = response.fields.getStringSelectValues("nameType")[0];
+        const bountyType = response.fields.getStringSelectValues("bountyType")[0];
+        const selectedDays = response.fields.getStringSelectValues("days");
+        const saveType = response.fields.getStringSelectValues("saveType");
+
+        saveAsDefault(interaction.user.id, saveType); // TODO
+
+        await replyBounty(response, nameType, bountyType, selectedDays, cycles, cycleIndices);
+    } catch {
+        await interaction.followUp({
+            content: "The form timed out (max 5 minutes).",
+            flags: MessageFlags.Ephemeral
+        });
     }
 }
