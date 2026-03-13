@@ -18,7 +18,7 @@ module.exports = {
         ),
     async execute(interaction) {
         const { cycles, cycleOffsets } = require('../data/bounty_cycles.json');
-        const defaultProfiles = require("../data/profile_defaults.json");
+        const defaultProfiles = require("../data/default_profiles.json");
         const cycleIndices = getCycleIndices(cycles, cycleOffsets)
         const showGlobalDefault = interaction.options.getBoolean("global");
         const createCustom = interaction.options.getBoolean("custom");
@@ -232,7 +232,7 @@ function createBountiesModal() {
 
 function saveAsDefault(interaction, nameType, bountyType, selectedDays, saveType) {
     if (saveType === "nosave") return;
-    const profileDefaults = require("../data/profile_defaults.json");
+    const profileDefaults = require("../data/default_profiles.json");
 
     const profile = {
         "nameType": nameType,
@@ -246,7 +246,7 @@ function saveAsDefault(interaction, nameType, bountyType, selectedDays, saveType
         profileDefaults[interaction.user.id] = profile;
     }
 
-    fs.writeFile('data/profile_defaults.json', JSON.stringify(profileDefaults, null, 4), async (error) => {
+    fs.writeFile('data/default_profiles.json', JSON.stringify(profileDefaults, null, 4), async (error) => {
         if (error) { console.error(error); }
     });
 }
