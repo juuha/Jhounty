@@ -18,7 +18,7 @@ module.exports = {
                 .setDescription("Display a custom Bounties view.")
         ),
     async execute(interaction) {
-        const { cycles, cycleOffsets } = require('../bounty_cycles.json');
+        const { cycles, cycleOffsets } = require('../data/bounty_cycles.json');
         const cycleIndices = getCycleIndices(cycles, cycleOffsets)
         const showGlobalDefault = interaction.options.getBoolean("global");
         const personalDefaultExists = tempPersonalDefaultExists;

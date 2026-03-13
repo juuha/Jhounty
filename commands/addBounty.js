@@ -34,7 +34,7 @@ module.exports = {
                 )
         ),
     async execute(interaction) {
-        const bounty_cycles_json = require("../bounty_cycles.json");
+        const bounty_cycles_json = require("../data/bounty_cycles.json");
         const cycleIndex = interaction.options.getInteger("cycle") - 1;
 
         const bounty = {
@@ -44,7 +44,7 @@ module.exports = {
         };
 
         bounty_cycles_json["cycles"][cycleIndex].push(bounty);
-        fs.writeFile('bounty_cycles.json', JSON.stringify(bounty_cycles_json, null, 4), async (error) => {
+        fs.writeFile('data/bounty_cycles.json', JSON.stringify(bounty_cycles_json, null, 4), async (error) => {
             if (error) console.error(error);
         });
 
