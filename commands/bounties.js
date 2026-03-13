@@ -8,6 +8,11 @@ module.exports = {
         .setDescription(`Display your personal default Bounties view or the global view if it has not been saved.`)
         .addBooleanOption((option) =>
             option
+                .setName("next_week")
+                .setDescription("Display the bounties of next week instead.")   
+        )
+        .addBooleanOption((option) =>
+            option
                 .setName("global")
                 .setDescription("Display the global default Bounties view instead.")
         )
@@ -19,14 +24,16 @@ module.exports = {
     async execute(interaction) {
         const { cycles, cycleOffsets } = require('../data/bounty_cycles.json');
         const defaultProfiles = require("../data/default_profiles.json");
-        const cycleIndices = getCycleIndices(cycles, cycleOffsets)
+        const showNextWeek = interaction.options.getBoolean("next_week");
+        const cycleIndices = getCycleIndices(cycles, cycleOffsets, showNextWeek);
+        
         const showGlobalDefault = interaction.options.getBoolean("global");
         const createCustom = interaction.options.getBoolean("custom");
 
         if (createCustom) {
             const modal = createBountiesModal()
             await interaction.showModal(modal);
-            handleBountyModalAndReply(interaction, cycles, cycleIndices)
+            handleBountyModalAndReply(interaction, cycles, cycleIndices, showNextWeek)
             return;
         }
 
@@ -35,7 +42,7 @@ module.exports = {
             profile = defaultProfiles[interaction.guildId] ?? defaultProfiles["fallback"];
         }
 
-        await replyBounty(interaction, profile.nameType, profile.bountyType, profile.selectedDays, cycles, cycleIndices);
+        await replyBounty(interaction, profile.nameType, profile.bountyType, profile.selectedDays, cycles, cycleIndices, showNextWeek);
     },
 };
 
@@ -81,8 +88,9 @@ function concatenateBounties(bounties) {
     return bountyMessage;
 }
 
-function getCycleIndices(cycles, cycleoffsets) {
-    const today = new Date();
+function getCycleIndices(cycles, cycleoffsets, showNextWeek = false) {
+    const today = new Date()
+    if (showNextWeek) today.setDate(today.getDate() + 7);
     const daysSinceEpoch = Math.floor(today.getTime() / (1000 * 60 * 60 * 24));
     const cycleIndices = []
     for (let index = 0; index < cycles.length; index++) {
@@ -91,18 +99,20 @@ function getCycleIndices(cycles, cycleoffsets) {
     return cycleIndices;
 }
 
-function setTitle(bountyType) {
+function setTitle(bountyType, showNextWeek) {
+    const thisOrNext = showNextWeek ? "next" : "this";
+    
     if (bountyType === "raid") {
-        return "Raid (no strikes) bounties this week:"
+        return `Raid (no strikes) bounties ${thisOrNext} week:`
     } else if (bountyType === "strike") {
-        return "Strike (no raids) bounties this week:"
+        return `Strike (no raids) bounties ${thisOrNext} week:`
     } else {
-        return "Both raid and strike bounties this week:"
+        return `Both raid and strike bounties ${thisOrNext} week:`
     }
 }
 
-async function replyBounty(interaction, nameType = "name", bountyType = "both", selectedDays = weekdays, cycles, cycleIndices) {
-    const title = setTitle(bountyType);
+async function replyBounty(interaction, nameType = "name", bountyType = "both", selectedDays = weekdays, cycles, cycleIndices, showNextWeek = false) {
+    const title = setTitle(bountyType, showNextWeek);
     let message = "";
 
     for (let day = 0; day < weekdays.length; day++) {
@@ -251,7 +261,7 @@ function saveAsDefault(interaction, nameType, bountyType, selectedDays, saveType
     });
 }
 
-async function handleBountyModalAndReply(interaction, cycles, cycleIndices) {
+async function handleBountyModalAndReply(interaction, cycles, cycleIndices, showNextWeek = false) {
     const filter = (i) => i.customId === 'bountiesModal'
     try {
         const response = await interaction.awaitModalSubmit({
@@ -266,7 +276,7 @@ async function handleBountyModalAndReply(interaction, cycles, cycleIndices) {
 
         saveAsDefault(interaction, nameType, bountyType, selectedDays, saveType);
 
-        await replyBounty(response, nameType, bountyType, selectedDays, cycles, cycleIndices);
+        await replyBounty(response, nameType, bountyType, selectedDays, cycles, cycleIndices, showNextWeek);
     } catch {
         await interaction.followUp({
             content: "The form timed out (max 5 minutes).",
