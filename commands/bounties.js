@@ -1,4 +1,5 @@
 const { SlashCommandBuilder, EmbedBuilder, StringSelectMenuBuilder, StringSelectMenuOptionBuilder, ModalBuilder, LabelBuilder, MessageFlags } = require('discord.js');
+const fs = require("node:fs");
 const weekdays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday", "Bountyless"];
 const tempSelectedDays = ["Monday", "Wednesday", "Bountyless"];
 const tempPersonalDefaultExists = true;
@@ -119,7 +120,7 @@ function setTitle(bountyType) {
     }
 }
 
-async function replyBounty(interaction, nameType = "short", bountyType = "both", selectedDays, cycles, cycleIndices) {
+async function replyBounty(interaction, nameType = "name", bountyType = "both", selectedDays = weekdays, cycles, cycleIndices) {
     const title = setTitle(bountyType);
     let message = "";
 
@@ -248,12 +249,25 @@ function createBountiesModal() {
     return bountiesModal;
 }
 
-function saveAsDefault(userId, saveType) {
-    if (saveType === "globalsave") {
-        // TODO
-    } else if (saveType === "personalsave") {
-        // TODO
+function saveAsDefault(interaction, nameType, bountyType, selectedDays, saveType) {
+    if (saveType === "nosave") return;
+    const profileDefaults = require("../data/profile_defaults.json");
+
+    const profile = {
+        "nameType": nameType,
+        "bountyType": bountyType,
+        "selectedDays": selectedDays
     }
+
+    if (saveType === "globalsave") {
+        profileDefaults[interaction.guildId] = profile;
+    } else if (saveType === "personalsave") {
+        profileDefaults[interaction.user.id] = profile;
+    }
+
+    fs.writeFile('data/profile_defaults.json', JSON.stringify(profileDefaults, null, 4), async (error) => {
+        if (error) { console.error(error); }
+    });
 }
 
 async function handleBountyModalAndReply(interaction, cycles, cycleIndices) {
@@ -264,12 +278,12 @@ async function handleBountyModalAndReply(interaction, cycles, cycleIndices) {
             time: 300_000
         });
 
-        const nameType = response.fields.getStringSelectValues("nameType")[0];
-        const bountyType = response.fields.getStringSelectValues("bountyType")[0];
+        const nameType = response.fields.getStringSelectValues("nameType")[0] ?? "name";
+        const bountyType = response.fields.getStringSelectValues("bountyType")[0] ?? "both";
         const selectedDays = response.fields.getStringSelectValues("days");
-        const saveType = response.fields.getStringSelectValues("saveType");
+        const saveType = response.fields.getStringSelectValues("saveType")[0] ?? "nosave";
 
-        saveAsDefault(interaction.user.id, saveType); // TODO
+        saveAsDefault(interaction, nameType, bountyType, selectedDays, saveType);
 
         await replyBounty(response, nameType, bountyType, selectedDays, cycles, cycleIndices);
     } catch {
