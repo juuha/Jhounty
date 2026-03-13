@@ -2,11 +2,10 @@ const fs = require('node:fs');
 const path = require('node:path');
 const { Client, Collection, Events, GatewayIntentBits, MessageFlags } = require('discord.js');
 const { token } = require('./config.json');
+const { guilds } = require('./data/guilds.json');
+const deployCommands = require('./deploy_commands.js');
 
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
-client.once(Events.ClientReady, (readyClient) => {
-    console.log(`Ready! Logged in as ${readyClient.user.tag}`);
-});
 
 client.commands = new Collection();
 const commandsPath = path.join(__dirname, 'commands');
@@ -21,6 +20,21 @@ for (const file of commandFiles) {
         console.log(`[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`);
     }
 }
+
+client.once(Events.ClientReady, async (readyClient) => {
+    const fetchedGuilds = (await client.guilds.fetch()).map((guild) => guild.id);
+    const newGuilds = fetchedGuilds.filter((guildId) => !guilds.includes(guildId));
+    newGuilds.forEach((guildId) => deployCommands(client.user.id, guildId));
+    const guildsJSON = { guilds: fetchedGuilds };
+    fs.writeFile('data/guilds.json', JSON.stringify(guildsJSON, null, 4), async (error) => {
+        if (error) console.error(error);
+    });
+    console.log(`Ready! Logged in as ${readyClient.user.tag}`);
+});
+
+client.on(Events.GuildCreate, async (guild) => {
+    deployCommands(client.user.id, guild.id);
+})
 
 
 client.on(Events.InteractionCreate, async (interaction) => {
