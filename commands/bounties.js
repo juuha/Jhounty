@@ -1,8 +1,6 @@
 const { SlashCommandBuilder, EmbedBuilder, StringSelectMenuBuilder, StringSelectMenuOptionBuilder, ModalBuilder, LabelBuilder, MessageFlags } = require('discord.js');
 const fs = require("node:fs");
 const weekdays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday", "Bountyless"];
-const tempSelectedDays = ["Monday", "Wednesday", "Bountyless"];
-const tempPersonalDefaultExists = true;
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -20,41 +18,24 @@ module.exports = {
         ),
     async execute(interaction) {
         const { cycles, cycleOffsets } = require('../data/bounty_cycles.json');
+        const defaultProfiles = require("../data/profile_defaults.json");
         const cycleIndices = getCycleIndices(cycles, cycleOffsets)
         const showGlobalDefault = interaction.options.getBoolean("global");
-        const personalDefaultExists = tempPersonalDefaultExists;
         const createCustom = interaction.options.getBoolean("custom");
-        let bountyType = "";
-        let nameType = "";
-        let selectedDays = [];
 
         if (createCustom) {
             const modal = createBountiesModal()
             await interaction.showModal(modal);
             handleBountyModalAndReply(interaction, cycles, cycleIndices)
             return;
-        } else if (personalDefaultExists && !showGlobalDefault) {
-            // show personal, TODO
-            const personalNameType = "name"; // TODO;
-            const personalBountyTpe = "raid"; // TODO
-            tempSelectedDays.push("Friday"); // TEMPORARY
-            const personalSelectedDays = tempSelectedDays; // TODO
-
-            nameType = personalNameType;
-            bountyType = personalBountyTpe;
-            selectedDays = personalSelectedDays;
-        } else {
-            // show global, TODO
-            const globalNameType = "short"; // TODO
-            const globalBountyType = "both"; // TODO
-            const globalSelectedDays = tempSelectedDays; // TODO
-
-            nameType = globalNameType;
-            bountyType = globalBountyType;
-            selectedDays = globalSelectedDays;
         }
 
-        await replyBounty(interaction, nameType, bountyType, selectedDays, cycles, cycleIndices);
+        let profile = defaultProfiles[interaction.user.id];
+        if (showGlobalDefault || profile === undefined) {
+            profile = defaultProfiles[interaction.guildId] ?? defaultProfiles["fallback"];
+        }
+
+        await replyBounty(interaction, profile.nameType, profile.bountyType, profile.selectedDays, cycles, cycleIndices);
     },
 };
 
