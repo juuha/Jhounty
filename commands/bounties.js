@@ -58,7 +58,6 @@ module.exports = {
 };
 
 function setDayMessage(day, nameType, bountyType, cycles, cycleIndices) {
-    let dayMessage = `**${weekdays[day]}: **`;
     const bounties = [];
     for (let cycleIndex = 0; cycleIndex < cycles.length; cycleIndex++) {
         const cycle = cycles[cycleIndex];
@@ -67,22 +66,10 @@ function setDayMessage(day, nameType, bountyType, cycles, cycleIndices) {
             bounties.push(bounty[nameType]);
         }
     }
-    for (let bountyIndex = 0; bountyIndex < bounties.length; bountyIndex++) {
-        if (bountyIndex === bounties.length - 2) {
-            // second to last one
-            dayMessage += `${bounties[bountyIndex]} & `;
-        } else if (bountyIndex === bounties.length - 1) {
-            // last one
-            dayMessage += `${bounties[bountyIndex]}.\n`;
-        } else {
-            dayMessage += `${bounties[bountyIndex]}, `;
-        }
-    }
-    return dayMessage
+    return `**${weekdays[day]}: **` + concatenateBounties(bounties);
 }
 
 function setMissingBounties(nameType, bountyType, cycles, cycleIndices) {
-    var missingBounties = "**Bountyless: **";
     const bounties = [];
     for (let index = 0; index < cycles.length; index++) {
         const cycle = cycles[index];
@@ -93,18 +80,23 @@ function setMissingBounties(nameType, bountyType, cycles, cycleIndices) {
             }
         }
     }
-    for (let bounty = 0; bounty < bounties.length; bounty++) {
-        if (bounty === bounties.length - 2) {
+    return "**Bountyless: **" + concatenateBounties(bounties);
+}
+
+function concatenateBounties(bounties) {
+    let bountyMessage = "";
+    for (let bountyIndex = 0; bountyIndex < bounties.length; bountyIndex++) {
+        if (bountyIndex === bounties.length - 2) {
             // second to last one
-            missingBounties += `${bounties[bounty]} & `;
-        } else if (bounty === bounties.length - 1) {
+            bountyMessage += `${bounties[bountyIndex]} & `;
+        } else if (bountyIndex === bounties.length - 1) {
             // last one
-            missingBounties += `${bounties[bounty]}.`;
+            bountyMessage += `${bounties[bountyIndex]}.\n`;
         } else {
-            missingBounties += `${bounties[bounty]}, `;
+            bountyMessage += `${bounties[bountyIndex]}, `;
         }
     }
-    return missingBounties
+    return bountyMessage;
 }
 
 function getCycleIndices(cycles, cycleoffsets) {
