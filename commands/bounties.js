@@ -303,9 +303,10 @@ async function handleBountyModalAndReply(interaction, cycles, cycleIndices, show
         });
     } catch {
         await interaction.followUp({
-            content: "The form timed out (max 5 minutes).",
+            content: "The form timed out. (max 5 minutes)",
             flags: MessageFlags.Ephemeral
         });
+        return;
     }
 
     const nameType = response.fields.getStringSelectValues("nameType")[0] ?? "name";
