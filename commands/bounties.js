@@ -174,8 +174,8 @@ function createBountiesModal() {
 
     const shortInput = new StringSelectMenuBuilder()
         .setCustomId("nameType")
-        .setMinValues(1)
         .setMaxValues(1)
+        .setRequired(false)
         .addOptions(
             new StringSelectMenuOptionBuilder()
                 .setLabel("Short names")
@@ -187,13 +187,13 @@ function createBountiesModal() {
 
     const shortLabel = new LabelBuilder()
         .setLabel("Do you want full names or shortened names?")
-        .setDescription("Names are short by default.")
+        .setDescription("Names are full by default.")
         .setStringSelectMenuComponent(shortInput);
 
     const bountyTypeInput = new StringSelectMenuBuilder()
         .setCustomId("bountyType")
-        .setMinValues(1)
         .setMaxValues(1)
+        .setRequired(false)
         .addOptions(
             new StringSelectMenuOptionBuilder()
                 .setLabel("Raids")
@@ -250,6 +250,7 @@ function createBountiesModal() {
 
     const saveAsDefaultInput = new StringSelectMenuBuilder()
         .setCustomId("saveType")
+        .setRequired(false)
         .addOptions(
             new StringSelectMenuOptionBuilder()
                 .setLabel("Save as personal default")
