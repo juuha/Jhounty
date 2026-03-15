@@ -101,15 +101,46 @@ function getCycleIndices(cycles, cycleOffsets, showNextWeek = false) {
 }
 
 function setTitle(bountyType, showNextWeek) {
-    const thisOrNext = showNextWeek ? "next" : "this";
-    
     if (bountyType === "raid") {
-        return `Raid (no strikes) bounties ${thisOrNext} week:`
+        var bountyTypeFormatted = "Raid";
     } else if (bountyType === "strike") {
-        return `Strike (no raids) bounties ${thisOrNext} week:`
+        var bountyTypeFormatted = "Strike";
     } else {
-        return `Both raid and strike bounties ${thisOrNext} week:`
+        var bountyTypeFormatted = "All";
     }
+
+    const { mondayTimestamp, sundayTimestamp } = getTimestamps(showNextWeek);
+
+    return `${bountyTypeFormatted} bounties for week ${mondayTimestamp} - ${sundayTimestamp}:`;
+}
+
+function getTimestamps(showNextWeek) {
+    const today = new Date();
+
+    if (today.getDay() === 0) {
+        today.setDate(today.getDate() - 1);
+        var todayIsSunday = true;
+    }
+
+    if (showNextWeek) today.setDate(today.getDate() + 7);
+
+    const monday = new Date();
+    const sunday = new Date();
+
+    if (todayIsSunday) {
+        monday.setDate(today.getDate() - 5);
+        sunday.setDate(today.getDate() + 1);
+    } else {
+        monday.setDate(today.getDate() - today.getDay() + 1);
+        sunday.setDate(today.getDate() - today.getDay() + 7);
+    }
+
+    const mondaySeconds = Math.floor(monday.getTime() / 1000);
+    const sundaySeconds = Math.floor(sunday.getTime() / 1000);
+    const mondayTimestamp = `<t:${mondaySeconds}:D>`;
+    const sundayTimestamp = `<t:${sundaySeconds}:D>`;
+
+    return { mondayTimestamp, sundayTimestamp };
 }
 
 async function replyBounty(interaction, nameType = "name", bountyType = "both", selectedDays = weekdays, cycles, cycleIndices, showNextWeek = false) {
