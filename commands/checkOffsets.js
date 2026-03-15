@@ -6,7 +6,7 @@ module.exports = {
         .setName('check_offsets')
         .setDescription("Shows the current offsets for each cycle."),
     async execute(interaction) {
-        const { cycleOffsets } = require("../data/bounty_cycles.json");
+        const { cycleOffsets } = require("../data/bountyCycles.json");
 
         await interaction.reply({
             content: `Offsets for each cycle: ${cycleOffsets[0]}, ${cycleOffsets[1]}, ${cycleOffsets[2]} and ${cycleOffsets[3]}.`,

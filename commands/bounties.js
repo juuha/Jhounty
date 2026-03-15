@@ -22,8 +22,8 @@ module.exports = {
                 .setDescription("Display a custom Bounties view.")
         ),
     async execute(interaction) {
-        const { cycles, cycleOffsets } = require('../data/bounty_cycles.json');
-        const defaultProfiles = require("../data/default_profiles.json");
+        const { cycles, cycleOffsets } = require('../data/bountyCycles.json');
+        const defaultProfiles = require("../data/defaultProfiles.json");
         const showNextWeek = interaction.options.getBoolean("next_week");
         const cycleIndices = getCycleIndices(cycles, cycleOffsets, showNextWeek);
 
@@ -119,7 +119,7 @@ function getTimestamps(showNextWeek) {
 
     if (today.getDay() === 0) {
         today.setDate(today.getDate() - 1);
-        var todayIsSunday = true;
+        var todayIsSunday = true; // Date start weeks from Sunday, when we want it to start from Monday.
     }
 
     if (showNextWeek) today.setDate(today.getDate() + 7);
@@ -253,13 +253,13 @@ function createBountiesModal() {
         .addOptions(
             new StringSelectMenuOptionBuilder()
                 .setLabel("Save as personal default")
-                .setValue("personalsave"),
+                .setValue("personal_save"),
             new StringSelectMenuOptionBuilder()
                 .setLabel("Save as global default")
-                .setValue("globalsave"),
+                .setValue("global_save"),
             new StringSelectMenuOptionBuilder()
                 .setLabel("Do not save")
-                .setValue("nosave")
+                .setValue("no_save")
         );
 
     const saveAsDefaultLabel = new LabelBuilder()
@@ -274,7 +274,7 @@ function createBountiesModal() {
 
 function saveAsDefault(interaction, nameType, bountyType, selectedDays, saveType) {
     if (saveType === "nosave") return;
-    const profileDefaults = require("../data/default_profiles.json");
+    const profileDefaults = require("../data/defaultProfiles.json");
 
     const profile = {
         "nameType": nameType,
@@ -282,13 +282,13 @@ function saveAsDefault(interaction, nameType, bountyType, selectedDays, saveType
         "selectedDays": selectedDays
     }
 
-    if (saveType === "globalsave") {
+    if (saveType === "global_save") {
         profileDefaults[interaction.guildId] = profile;
-    } else if (saveType === "personalsave") {
+    } else if (saveType === "personal_save") {
         profileDefaults[interaction.user.id] = profile;
     }
 
-    fs.writeFile('data/default_profiles.json', JSON.stringify(profileDefaults, null, 4), async (error) => {
+    fs.writeFile('data/defaultProfiles.json', JSON.stringify(profileDefaults, null, 4), async (error) => {
         if (error) { console.error(error); }
     });
 }
@@ -296,23 +296,23 @@ function saveAsDefault(interaction, nameType, bountyType, selectedDays, saveType
 async function handleBountyModalAndReply(interaction, cycles, cycleIndices, showNextWeek = false) {
     const filter = (i) => i.customId === 'bountiesModal'
     try {
-        const response = await interaction.awaitModalSubmit({
+        var response = await interaction.awaitModalSubmit({
             filter,
             time: 300_000
         });
-
-        const nameType = response.fields.getStringSelectValues("nameType")[0] ?? "name";
-        const bountyType = response.fields.getStringSelectValues("bountyType")[0] ?? "both";
-        const selectedDays = response.fields.getStringSelectValues("days");
-        const saveType = response.fields.getStringSelectValues("saveType")[0] ?? "nosave";
-
-        saveAsDefault(interaction, nameType, bountyType, selectedDays, saveType);
-
-        await replyBounty(response, nameType, bountyType, selectedDays, cycles, cycleIndices, showNextWeek);
     } catch {
         await interaction.followUp({
             content: "The form timed out (max 5 minutes).",
             flags: MessageFlags.Ephemeral
         });
     }
+
+    const nameType = response.fields.getStringSelectValues("nameType")[0] ?? "name";
+    const bountyType = response.fields.getStringSelectValues("bountyType")[0] ?? "both";
+    const selectedDays = response.fields.getStringSelectValues("days");
+    const saveType = response.fields.getStringSelectValues("saveType")[0] ?? "no_save";
+
+    saveAsDefault(interaction, nameType, bountyType, selectedDays, saveType);
+
+    await replyBounty(response, nameType, bountyType, selectedDays, cycles, cycleIndices, showNextWeek);
 }

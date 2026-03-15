@@ -3,7 +3,7 @@ const { SlashCommandBuilder, MessageFlags } = require('discord.js');
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName('removebounty')
+        .setName('remove_bounty')
         .setDescription('Remove a bounty from all cycles it is found in.')
         .addStringOption((option) =>
             option.setName("name")
@@ -11,11 +11,11 @@ module.exports = {
                 .setRequired(true)
         ),
     async execute(interaction) {
-        const bounty_cycles_json = require("../data/bounty_cycles.json");
+        const bountyCycles = require("../data/bountyCycles.json");
         const name = interaction.options.getString("name");
 
         let found = false;
-        bounty_cycles_json["cycles"].forEach((cycle) => {
+        bountyCycles["cycles"].forEach((cycle) => {
             cycle.some((bounty, index) => {
                 if (bounty.name === name || bounty.short === name) {
                     cycle.splice(index, 1);
@@ -25,7 +25,7 @@ module.exports = {
         });
         
         if (found) {
-            fs.writeFile('data/bounty_cycles.json', JSON.stringify(bounty_cycles_json, null, 4), async (error) => {
+            fs.writeFile('data/bountyCycles.json', JSON.stringify(bountyCycles, null, 4), async (error) => {
                 if (error) console.error(error);
             });
             

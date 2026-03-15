@@ -7,10 +7,10 @@ module.exports = {
         .setDescription('Deletes your personal default so you use the global profile by default again.')
         ,
     async execute(interaction) {
-        const defaultProfiles = require("../data/default_profiles.json");
+        const defaultProfiles = require("../data/defaultProfiles.json");
         delete defaultProfiles[interaction.user.id];
 
-        fs.writeFile('data/default_profiles.json', JSON.stringify(defaultProfiles, null, 4), async (error) => {
+        fs.writeFile('data/defaultProfiles.json', JSON.stringify(defaultProfiles, null, 4), async (error) => {
             if (error) console.error(error);
         });
 

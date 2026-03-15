@@ -3,7 +3,7 @@ const { SlashCommandBuilder, MessageFlags } = require('discord.js');
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName('addbounty')
+        .setName('add_bounty')
         .setDescription('Add a new bounty to a raid cycle.')
         .addIntegerOption((option) =>
             option.setName("cycle")
@@ -13,13 +13,13 @@ module.exports = {
                 .setMaxValue(4)
         )
         .addStringOption((option) =>
-            option.setName("fullname")
+            option.setName("full_name")
                 .setDescription(`Full name of the Bounty.`)
                 .setRequired(true)
         )
         .addStringOption((option) =>
             option
-                .setName("shortname")
+                .setName("short_name")
                 .setDescription("The shortened name. For example VG for Vale Guardian.")
                 .setRequired(true)
         )
@@ -34,17 +34,17 @@ module.exports = {
                 )
         ),
     async execute(interaction) {
-        const bounty_cycles_json = require("../data/bounty_cycles.json");
+        const bountyCycles = require("../data/bountyCycles.json");
         const cycleIndex = interaction.options.getInteger("cycle") - 1;
 
         const bounty = {
-            "name": interaction.options.getString("fullname"),
-            "short": interaction.options.getString("shortname"),
+            "name": interaction.options.getString("full_name"),
+            "short": interaction.options.getString("short_name"),
             "type": interaction.options.getString("type")
         };
 
-        bounty_cycles_json["cycles"][cycleIndex].push(bounty);
-        fs.writeFile('data/bounty_cycles.json', JSON.stringify(bounty_cycles_json, null, 4), async (error) => {
+        bountyCycles["cycles"][cycleIndex].push(bounty);
+        fs.writeFile('data/bountyCycles.json', JSON.stringify(bountyCycles, null, 4), async (error) => {
             if (error) console.error(error);
         });
 

@@ -3,7 +3,7 @@ const { SlashCommandBuilder, MessageFlags } = require('discord.js');
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName('setoffset')
+        .setName('set_offset')
         .setDescription('Set the offset for a raid bounty cycle.')
         .addIntegerOption((option) =>
             option.setName("cycle")
@@ -20,12 +20,12 @@ module.exports = {
                 .setRequired(true)
         ),
     async execute(interaction) {
-        const bounty_cycles_json = require("../data/bounty_cycles.json");
+        const bountyCycles = require("../data/bountyCycles.json");
         const cycleIndex = interaction.options.getInteger("cycle") - 1;
         const offset = interaction.options.getInteger("offset");
 
-        bounty_cycles_json["cycleOffsets"][cycleIndex] = offset;
-        fs.writeFile('data/bounty_cycles.json', JSON.stringify(bounty_cycles_json, null, 4), async (error) => {
+        bountyCycles["cycleOffsets"][cycleIndex] = offset;
+        fs.writeFile('data/bountyCycles.json', JSON.stringify(bountyCycles, null, 4), async (error) => {
             if (error) console.error(error);
         });
 

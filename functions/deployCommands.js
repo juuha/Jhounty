@@ -1,11 +1,11 @@
 const { REST, Routes } = require('discord.js');
-const { token } = require('./config.json');
+const { token } = require('../config.json');
 const fs = require('node:fs');
 const path = require('node:path');
 
-module.exports = async (client_id, guild_id) => {
+module.exports = async (cliendId, guildId) => {
 	const commands = [];
-	const commandsPath = path.join(__dirname, 'commands');
+	const commandsPath = path.join(__dirname, '../commands');
 	const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
 	for (const file of commandFiles) {
 		const filePath = path.join(commandsPath, file);
@@ -20,8 +20,8 @@ module.exports = async (client_id, guild_id) => {
 	const rest = new REST().setToken(token);
 	(async () => {
 		try {
-			const data = await rest.put(Routes.applicationGuildCommands(client_id, guild_id), { body: commands });
-			console.log(`Successfully sent ${data.length} application (/) commands to guild with id ${guild_id}.`);
+			const data = await rest.put(Routes.applicationGuildCommands(cliendId, guildId), { body: commands });
+			console.log(`Successfully sent ${data.length} application (/) commands to guild with id ${guildId}.`);
 		} catch (error) {
 			console.error(error);
 		}

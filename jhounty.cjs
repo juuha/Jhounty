@@ -3,7 +3,7 @@ const path = require('node:path');
 const { Client, Collection, Events, GatewayIntentBits, MessageFlags } = require('discord.js');
 const { token } = require('./config.json');
 const { guilds } = require('./data/guilds.json');
-const deployCommands = require('./deploy_commands.js');
+const deployCommands = require('./functions/deployCommands.js');
 
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 
@@ -25,8 +25,8 @@ client.once(Events.ClientReady, async (readyClient) => {
     const fetchedGuilds = (await client.guilds.fetch()).map((guild) => guild.id);
     const newGuilds = fetchedGuilds.filter((guildId) => !guilds.includes(guildId));
     newGuilds.forEach((guildId) => deployCommands(client.user.id, guildId));
-    const guildsJSON = { guilds: fetchedGuilds };
-    fs.writeFile('data/guilds.json', JSON.stringify(guildsJSON, null, 4), async (error) => {
+    const updatedGuilds = { "guilds": fetchedGuilds };
+    fs.writeFile('data/guilds.json', JSON.stringify(updatedGuilds, null, 4), async (error) => {
         if (error) console.error(error);
     });
     console.log(`Ready! Logged in as ${readyClient.user.tag}`);
@@ -34,6 +34,7 @@ client.once(Events.ClientReady, async (readyClient) => {
 
 client.on(Events.GuildCreate, async (guild) => {
     deployCommands(client.user.id, guild.id);
+    
 })
 
 
