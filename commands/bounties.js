@@ -9,7 +9,7 @@ module.exports = {
         .addBooleanOption((option) =>
             option
                 .setName("next_week")
-                .setDescription("Display the bounties of next week instead.")   
+                .setDescription("Display the bounties of next week instead.")
         )
         .addBooleanOption((option) =>
             option
@@ -26,7 +26,7 @@ module.exports = {
         const defaultProfiles = require("../data/default_profiles.json");
         const showNextWeek = interaction.options.getBoolean("next_week");
         const cycleIndices = getCycleIndices(cycles, cycleOffsets, showNextWeek);
-        
+
         const showGlobalDefault = interaction.options.getBoolean("global");
         const createCustom = interaction.options.getBoolean("custom");
 
@@ -88,13 +88,14 @@ function concatenateBounties(bounties) {
     return bountyMessage;
 }
 
-function getCycleIndices(cycles, cycleoffsets, showNextWeek = false) {
-    const today = new Date()
+function getCycleIndices(cycles, cycleOffsets, showNextWeek = false) {
+    const today = new Date();
+    if (today.getDay() === 0) today.setDate(today.getDate() - 1);
     if (showNextWeek) today.setDate(today.getDate() + 7);
     const daysSinceEpoch = Math.floor(today.getTime() / (1000 * 60 * 60 * 24));
-    const cycleIndices = []
+    const cycleIndices = [];
     for (let index = 0; index < cycles.length; index++) {
-        cycleIndices.push((daysSinceEpoch + cycleoffsets[index] - (today.getDay() - 1)) % cycles[index].length);
+        cycleIndices.push((daysSinceEpoch + cycleOffsets[index] - (today.getDay() - 1)) % cycles[index].length);
     }
     return cycleIndices;
 }
