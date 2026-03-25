@@ -116,23 +116,20 @@ function setTitle(bountyType, showNextWeek) {
 
 function getTimestamps(showNextWeek) {
     const today = new Date();
-
-    if (today.getDay() === 0) {
-        today.setDate(today.getDate() - 1);
-        var todayIsSunday = true; // Date start weeks from Sunday, when we want it to start from Monday.
-    }
-
-    if (showNextWeek) today.setDate(today.getDate() + 7);
-
     const monday = new Date();
     const sunday = new Date();
 
-    if (todayIsSunday) {
-        monday.setDate(today.getDate() - 5);
-        sunday.setDate(today.getDate() + 1);
+    // Date start weeks from Sunday, when we want it to start from Monday.
+    if (today.getDay() === 0) {
+        monday.setDate(today.getDate() - 6);
     } else {
         monday.setDate(today.getDate() - today.getDay() + 1);
         sunday.setDate(today.getDate() - today.getDay() + 7);
+    }
+
+    if (showNextWeek) {
+        monday.setDate(monday.getDate() + 7);
+        sunday.setDate(sunday.getDate() + 7);
     }
 
     const mondaySeconds = Math.floor(monday.getTime() / 1000);
